@@ -1,17 +1,13 @@
 const { v4: uuidv4 } = require("uuid");
 
-// In-memory database
-let persons = [{ id: "1", name: "Sam", age: 26, hobbies: [] }];
-
-// Function to create a new person
-exports.createPerson = (name, age, hobbies = []) => {
+exports.createPerson = (persons, name, age, hobbies) => {
   if (!name || typeof name !== "string") {
     throw new Error("Invalid name");
   }
   if (!age || typeof age !== "number") {
     throw new Error("Invalid age");
   }
-  if (!Array.isArray(hobbies)) {
+  if (!hobbies || !Array.isArray(hobbies)) {
     throw new Error("Invalid hobbies");
   }
 
@@ -20,15 +16,12 @@ exports.createPerson = (name, age, hobbies = []) => {
   return newPerson;
 };
 
-// Function to get all persons
-exports.getAllPersons = () => persons;
+exports.getAllPersons = (persons) => persons;
 
-// Function to get a person by id
-exports.getPersonById = (id) => persons.find((p) => p.id === id);
+exports.getPersonById = (persons, id) => persons.find((p) => p.id === id);
 
-// Function to update a person by id
-exports.updatePersonById = (id, updatedPerson) => {
-  const person = exports.getPersonById(id);
+exports.updatePersonById = (persons, id, updatedPerson) => {
+  const person = exports.getPersonById(persons, id);
   if (!person) {
     throw new Error("Person with such Id is not found");
   }
@@ -36,8 +29,7 @@ exports.updatePersonById = (id, updatedPerson) => {
   return person;
 };
 
-// Function to delete a person by id
-exports.deletePersonById = (id) => {
+exports.deletePersonById = (persons, id) => {
   const index = persons.findIndex((p) => p.id === id);
   if (index !== -1) {
     persons.splice(index, 1);

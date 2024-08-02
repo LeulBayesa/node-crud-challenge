@@ -1,11 +1,12 @@
-const Person = require("../models/person.model.js"); // In-Memory Database model
+const Person = require("../models/person.model.js");
 
 // to create a new person
 exports.createPerson = (req, res) => {
   try {
     const { name, age, hobbies } = req.body;
-    const newPerson = Person.createPerson(name, age, hobbies);
-    res.status(201).json({
+    const persons = req.app.get("db");
+    const newPerson = Person.createPerson(persons, name, age, hobbies);
+    res.status(200).json({
       message: "Person created successfully",
       data: newPerson,
     });
@@ -17,19 +18,17 @@ exports.createPerson = (req, res) => {
 // to get all persons or a person by id
 exports.getPersons = (req, res) => {
   const { id } = req.params;
+  const persons = req.app.get("db");
 
   if (id) {
-    const person = Person.getPersonById(id);
+    const person = Person.getPersonById(persons, id);
     if (person) {
       res.status(200).json(person);
     } else {
       res.status(404).json({ message: "Person with such Id is not found" });
     }
   } else {
-    const persons = Person.getAllPersons();
-    res.status(200).json({
-      Persons: persons,
-    });
+    res.status(200).json(persons);
   }
 };
 
@@ -37,8 +36,14 @@ exports.getPersons = (req, res) => {
 exports.updatePerson = (req, res) => {
   const { id } = req.params;
   const { name, age, hobbies } = req.body;
+  const persons = req.app.get("db");
+
   try {
-    const updatedPerson = Person.updatePersonById(id, { name, age, hobbies });
+    const updatedPerson = Person.updatePersonById(persons, id, {
+      name,
+      age,
+      hobbies,
+    });
     res.status(200).json({
       message: "Person updated successfully",
       data: updatedPerson,
@@ -52,14 +57,15 @@ exports.updatePerson = (req, res) => {
 
 exports.deletePerson = (req, res) => {
   const { id } = req.params;
+  const persons = req.app.get("db");
   try {
-    const person = Person.getPersonById(id);
+    const person = Person.getPersonById(persons, id);
     if (!person) {
       return res
         .status(404)
         .json({ message: "Person with such Id is not found" });
     }
-    Person.deletePersonById(id);
+    Person.deletePersonById(persons, id);
     res.status(200).json({ message: "Person deleted successfully" });
   } catch (error) {
     res

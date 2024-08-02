@@ -7,16 +7,27 @@ const personRoutes = require("./routes/person.router");
 const app = express();
 const port = process.env.PORT || 3000;
 
+let persons = [{
+  id: '1',
+  name: 'Sam',
+  age: '26',
+  hobbies: []    
+}] //This is your in memory database
+
+app.set('db', persons)
+
+//TODO: Implement crud of person
+
 // Middlewares
 app.use(bodyParser.json());
 app.use(cors());
 
-// person routes
-app.use("/person", personRoutes);
-
 app.get("/", (req, res) => {
   res.send("Welcome to the Node-CRUD-challenge");
 });
+
+// person routes
+app.use("/person", personRoutes);
 
 // Handle non-existing endpoints
 app.use((req, res) => {
